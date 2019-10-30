@@ -93,6 +93,7 @@ mysql –uroot
 UPDATE mysql.user SET authentication_string=PASSWORD('密码') where USER='root';
 
 set global validate_password_policy=0;
+set global validate_password_length=4;
 
 ALTER USER 'root'@'localhost' IDENTIFIED BY '密码';
 SET PASSWORD FOR root=PASSWORD('密码');

@@ -52,7 +52,7 @@ firewall-cmd --permanent --remove-port=123/tcp
 yum install iptables-services 
 ```
 
-#### 4、安装iptables-services ：
+#### 5、关闭防火墙
 
 ```shell
 查看防火墙状态：
@@ -66,7 +66,8 @@ systemctl status firewalld.service
 执行开机禁用防火墙自启命令  ：
 systemctl disable firewalld.service
 关于防火墙的其他命令：
-启动：systemctl start firewalld.service
+启动：
+systemctl start firewalld.service
 防火墙随系统开启启动  ：
 systemctl enable firewalld.service
 ```
