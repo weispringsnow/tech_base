@@ -72,3 +72,9 @@ systemctl start firewalld.service
 systemctl enable firewalld.service
 ```
 
+#### 6、网络设置
+
+```shell
+service network restart #重启网络
+```
+
