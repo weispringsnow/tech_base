@@ -103,6 +103,29 @@ mysql -uroot –p // 会提示输入密码
 grant all privileges on *.* to root@"%" identified by "密码";
 flush privileges; // 刷新设置立即生效
 ```
+#### 4、MySQL8允许远程连接
+
+```mysql
+-- 需要使用root权限登录mysql，更新mysql.user表，设置指定用户的Host字段为%，默认一般为localhost。 
+1.登录数据库 
+mysql -u root -p 
+输入密码:
+mysql> use mysql;
+2.查询host 
+mysql> select user,host from user;
+3.创建host 
+如果没有”%”这个host值,就执行下面这两句: 
+mysql> update user set host=’%’ where user=’root’; 
+mysql> flush privileges;
+4.授权用户
+alter user 'root'@'%' identified with mysql_native_password by '密码';
+flush privileges;
+% 允许从任何ip登录 
+x.x.x.x 允许从指定ip访问
+```
+
+
+
 
 
 
