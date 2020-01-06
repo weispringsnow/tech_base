@@ -156,6 +156,7 @@ make install
 systemctl start mysqld
 systemctl status mysqld
 开机启动
+service mysqld restart
 shell> systemctl enable mysqld
 shell> systemctl daemon-reload
 ```
@@ -192,9 +193,14 @@ mysql> update user set host=’%’ where user=’root’;
 mysql> flush privileges;
 4.授权用户
 alter user 'root'@'%' identified with mysql_native_password by '密码';
+grant all privileges on *.* to 'root'@'%';
 flush privileges;
 % 允许从任何ip登录 
 x.x.x.x 允许从指定ip访问
+
+vim my.cnf
+skip-grant-tables
+service mysqld restart
 ```
 
 
