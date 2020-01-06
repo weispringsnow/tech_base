@@ -68,5 +68,6 @@ REVOKE SELECT ON *.* FROM 'pig'@'%';
 ```mysql
 命令:
 DROP USER 'username'@'host';
+flush privileges;
 ```
 
