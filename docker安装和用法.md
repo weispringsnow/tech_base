@@ -87,21 +87,23 @@ docker run -d -p 8080:80 --name nginx nginx:latest
 复制主机文件到容器内：
 docker cp anaconda-ks.cfg cent:/var 
 ```
-#### 6、对容器的操作
 
-```shell
-docker export -o test.tar [容器名] 
-$ docker export -o nexus20200119.tar nexus
-docker export [容器名]>test.tar
-docker import test.tar [镜像名:版本号]      :导入归档文件，成为一个镜像
-$ docker import nexus20200119.tar nexus:20200119
-```
-
-#### 7、对镜像的操作
+#### 6、对镜像的操作
 
 ```shell
 docker save -o gyb:0109am1
-docker save gyb:0109am1 > qs01.tar   将镜像保存成 tar 归档文件
+docker save nexus:20200119 > nexus20200119.tar   将镜像保存成 tar 归档文件
 docker load --input qs01.tar   从归档文件加载镜像
-docker load < qs01.tar
+docker load < nexus20200119.tar
+```
+#### 7、从运行中docker容器生成镜像并上传的阿里云私服
+
+```shell
+docker commit -m "nexus 20200119" -a "weicx" 4e852d7b09c5 nexus:20200119
+登录到阿里云上传：
+sudo docker login --username=13426381800 registry.cn-hangzhou.aliyuncs.com
+docker tag 37bb9c63c8b2 registry.cn-hangzhou.aliyuncs.com/weicx/nexus3:20200119
+docker push registry.cn-hangzhou.aliyuncs.com/weicx/nexus3:20200119
+docker pull registry.cn-hangzhou.aliyuncs.com/weicx/nexus3:20200119
+
 ```
