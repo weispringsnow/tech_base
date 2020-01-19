@@ -87,4 +87,21 @@ docker run -d -p 8080:80 --name nginx nginx:latest
 复制主机文件到容器内：
 docker cp anaconda-ks.cfg cent:/var 
 ```
+#### 6、对容器的操作
 
+```shell
+docker export -o test.tar [容器名] 
+$ docker export -o nexus20200119.tar nexus
+docker export [容器名]>test.tar
+docker import test.tar [镜像名:版本号]      :导入归档文件，成为一个镜像
+$ docker import nexus20200119.tar nexus:20200119
+```
+
+#### 7、对镜像的操作
+
+```shell
+docker save -o gyb:0109am1
+docker save gyb:0109am1 > qs01.tar   将镜像保存成 tar 归档文件
+docker load --input qs01.tar   从归档文件加载镜像
+docker load < qs01.tar
+```
