@@ -203,8 +203,53 @@ skip-grant-tables
 service mysqld restart
 ```
 
+### 四、docker安装mysql1.8.0
 
+#### 1、拉取镜像、运行镜像
 
+```shell
+docker pull mysql
+sudo docker login --username=13426381800 registry.cn-hangzhou.aliyuncs.com
+sudo docker pull registry.cn-hangzhou.aliyuncs.com/weicx/mysql:20200121
+docker stop mysql
+docker rm mysql
+docker run -d --name mysql \
+--restart=always \
+-p 33060:3306  \
+-v /home/mysql/data:/var/lib/mysql  \
+-v /home/mysql/logs:/var/log/mysql \
+-v /etc/localtime:/etc/localtime \
+-e MYSQL_ROOT_PASSWORD=8ach4b6f9c \
+registry.cn-hangzhou.aliyuncs.com/weicx/mysql:20200121
+
+docker stop mysql
+docker rm mysql
+docker run -d --name mysql \
+--restart=always \
+-p 33060:3306  \
+-v /home/mysql/data:/var/lib/mysql  \
+-v /home/mysql/logs:/var/log/mysql \
+-v /etc/localtime:/etc/localtime \
+-e MYSQL_ROOT_PASSWORD=8ach4b6f9c \
+mysql
+
+mkdir -p /home/mysql/data
+mkdir -p /home/mysql/logs
+查看运行日志
+docker logs -f mysql
+进入容器
+docker exec -it mysql bash
+docker cp mysql:/var/lib/mysql/ /home/mysql/data
+docker cp mysql:/var/log/mysql/ /home/mysql/logs
+```
+#### 2、mysql-binlog日志删除
+
+```mysql
+第一种方法： 　　
+mysql> show binary logs; 查看mysql bin-log日志，除了这个以外的，其它都可以使用删除。 　　
+mysql> purge binary logs to 'binlog.000058'; （删除mysql bin-log日志,不包括binlog.000058） 
+show binlog events in 'binlog.000001'
+```
 
 
 
