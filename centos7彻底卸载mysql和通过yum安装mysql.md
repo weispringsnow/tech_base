@@ -216,8 +216,8 @@ docker rm mysql
 docker run -d --name mysql \
 --restart=always \
 -p 33060:3306  \
--v /home/mysql/data:/var/lib/mysql  \
--v /home/mysql/logs:/var/log/mysql \
+-v /home/docker/mysql/data:/var/lib/mysql  \
+-v /home/docker/mysql/logs:/var/log/mysql \
 -v /etc/localtime:/etc/localtime \
 -e MYSQL_ROOT_PASSWORD=8ach4b6f9c \
 registry.cn-hangzhou.aliyuncs.com/weicx/mysql:20200121
@@ -227,20 +227,20 @@ docker rm mysql
 docker run -d --name mysql \
 --restart=always \
 -p 33060:3306  \
--v /home/mysql/data:/var/lib/mysql  \
--v /home/mysql/logs:/var/log/mysql \
+-v /home/mysql/docker/data:/var/lib/mysql  \
+-v /home/mysql/docker/logs:/var/log/mysql \
 -v /etc/localtime:/etc/localtime \
 -e MYSQL_ROOT_PASSWORD=8ach4b6f9c \
 mysql
 
-mkdir -p /home/mysql/data
-mkdir -p /home/mysql/logs
+mkdir -p /home/docker/mysql/data
+mkdir -p /home/docker/mysql/logs
 查看运行日志
 docker logs -f mysql
 进入容器
 docker exec -it mysql bash
-docker cp mysql:/var/lib/mysql/ /home/mysql/data
-docker cp mysql:/var/log/mysql/ /home/mysql/logs
+docker cp mysql:/var/lib/mysql/ /home/docker/mysql/data
+docker cp mysql:/var/log/mysql/ /home/docker/mysql/logs
 ```
 #### 2、mysql-binlog日志删除
 
