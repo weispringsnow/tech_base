@@ -105,5 +105,15 @@ sudo docker login --username=13426381800 registry.cn-hangzhou.aliyuncs.com
 docker tag 37bb9c63c8b2 registry.cn-hangzhou.aliyuncs.com/weicx/nexus3:20200119
 docker push registry.cn-hangzhou.aliyuncs.com/weicx/nexus3:20200119
 docker pull registry.cn-hangzhou.aliyuncs.com/weicx/nexus3:20200119
+```
 
+#### 8、docker 配置镜像加速
+
+```shell
+docker commit -m "nexus 20200119" -a "weicx" 4e852d7b09c5 nexus:20200119
+登录到阿里云上传：
+sudo docker login --username=13426381800 registry.cn-hangzhou.aliyuncs.com
+docker tag 37bb9c63c8b2 registry.cn-hangzhou.aliyuncs.com/weicx/nexus3:20200119
+docker push registry.cn-hangzhou.aliyuncs.com/weicx/nexus3:20200119
+docker pull registry.cn-hangzhou.aliyuncs.com/weicx/nexus3:20200119
 ```
