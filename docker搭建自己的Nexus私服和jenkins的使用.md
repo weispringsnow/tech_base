@@ -1,77 +1,105 @@
 [TOC]
 
-####1、 创建用户
+##一、使用docker搭建nexus并配置docker私有仓库
 
-```mysql
-命令:
-CREATE USER 'username'@'host' IDENTIFIED BY 'password';
-CREATE USER 'username'@'host' IDENTIFIED with mysql_native_password BY 'password';
+####1、 docker从容器里面拷文件到宿主机或从宿主机拷文件到docker容器里面
 
-说明：
-username：你将创建的用户名
-host：指定该用户在哪个主机上可以登陆，如果是本地用户可用localhost，如果想让该用户可以从任意远程主机登陆，可以使用通配符%
-password：该用户的登陆密码，密码可以为空，如果为空则该用户可以不需要密码登陆服务器
-例子：
-CREATE USER 'dog'@'localhost' IDENTIFIED with mysql_native_password BY '123456';
-CREATE USER 'pig'@'192.168.1.101_' IDENDIFIED with mysql_native_password BY '123456';
-CREATE USER 'pig'@'%' IDENTIFIED BY with mysql_native_password '123456';
-CREATE USER 'pig'@'%' IDENTIFIED BY with mysql_native_password '';
-CREATE USER 'pig'@'%';
+```shell
+docker cp nexus:/nexus-data /home/
+docker cp /opt/test.js testtomcat：/usr/local/tomcat/webapps/test/js
 ```
 
-#### 2、授权:
+#### 2、查找镜像、拉取镜像
 
-```mysql
-先给root所有权限。
-grant all privileges on *.* to 'root'@'%';
-命令:
-GRANT privileges ON databasename.tablename TO 'username'@'host'
-说明:
-privileges：用户的操作权限，如SELECT，INSERT，UPDATE等，如果要授予所的权限则使用ALL
-databasename：数据库名
-tablename：表名，如果要授予该用户对所有数据库和表的相应操作权限则可用*表示，如*.*
-例子:
-GRANT SELECT, INSERT ON test.user TO 'pig'@'%';
-GRANT ALL ON *.* TO 'pig'@'%';
-GRANT ALL ON maindataplus.* TO 'pig'@'%';
-注意:
-用以上命令授权的用户不能给其它用户授权，如果想让该用户可以授权，用以下命令:
-GRANT privileges ON databasename.tablename TO 'username'@'host' WITH GRANT OPTION;
+```shell
+docker search nexus
+docker pull sonatype/nexus3
+docker images
 ```
 
-####3、设置与更改用户密码
+####3、启动容器
 
-```mysql
-命令:
-SET PASSWORD FOR 'username'@'host' = PASSWORD('newpassword');
-如果是当前登陆用户用:
-
-SET PASSWORD = PASSWORD("newpassword");
-例子:
-SET PASSWORD FOR 'pig'@'%' = PASSWORD("123456");
+```shell
+docker stop nexus3
+docker rm nexus3
+docker run -d --name nexus3 \
+ --restart=always \
+-p 9999:8081 \
+-p 7777:7777 \
+-v /home/nexus-data:/nexus-data \
+sonatype/nexus3
+路径必须不断给chmod 777 -R /home/nexus-data
+查看容器日志
+docker logs -f nexus3
+进入容器
+docker exec -it nexus3 bash
 ```
 
-#### 4、撤销用户权限
+#### 4、配置docker私有仓库
 
 ```mysql
-命令:
-REVOKE privilege ON databasename.tablename FROM 'username'@'host';
-说明:
-privilege, databasename, tablename：同授权部分
-
-例子:
-REVOKE SELECT ON *.* FROM 'pig'@'%';
-注意:
-假如你在给用户'pig'@'%'授权的时候是这样的（或类似的）：GRANT SELECT ON test.user TO 'pig'@'%'，则在使用REVOKE SELECT ON *.* FROM 'pig'@'%';命令并不能撤销该用户对test数据库中user表的SELECT操作。相反，如果授权使用的是GRANT SELECT ON *.* TO 'pig'@'%';则REVOKE SELECT ON test.user FROM 'pig'@'%';命令也不能撤销该用户对test数据库中user表的Select权限。
-
-具体信息可以用命令SHOW GRANTS FOR 'pig'@'%'; 查看。
+把Outreach: Management disable 更改密码 允许匿名访问
+选择Repositories，点击Create repository
+选择仓库类型 这里选择hosted类型命名为mydocker
+vim /etc/docker/daemon.json
+  {
+    "insecure-registries": ["172.16.2.66:7777" ]
+    }
+systemctl daemon-reload
+systemctl restart docker
+docker login -u admin -p 123456 172.16.2.66:7777  #注意这里的端口是配置仓库时选择的端口号
+docker tag mysql:latest 172.16.2.66:7777/mysql:0.1
+docker push 172.16.2.66:7777/mysql:0.1
+docker pull 172.16.2.66:7777/mysql:0.1
+docker search 172.16.2.66:7777/mysql:0.1
 ```
 
-#### 5、删除用户
+#### 二、使用docker搭建 jenkins蓝海
 
-```mysql
-命令:
-DROP USER 'username'@'host';
-flush privileges;
+```shell
+--拉取镜像：
+docker pull jenkinsci/blueocean
+--通过镜像生成容器运行
+docker stop jenkins-blueocean
+docker rm jenkins-blueocean
+docker run \
+  -u root \
+  --rm \
+  -d \
+  --name jenkins-blueocean \
+  --restart=always \
+  -p 9090:8080 \
+  -p 50000:50000 \
+  -v /var/jenkins_home:/var/jenkins_home \
+  -v /var/run/docker.sock:/var/run/docker.sock \
+  -v /usr/local/maven3:/usr/local/maven3 \       ---用的本地maven的Path
+  -v /usr/java/jdk1.8.0_212:/usr/java/jdk1.8.0_212 \    ---用的本地java的Path
+  jenkinsci/blueocean
+或
+docker stop jenkins-blueocean
+docker rm jenkins-blueocean
+docker run \
+  -d \
+  --name jenkins-blueocean \
+  --restart=always \
+  -p 9090:8080 \
+  -p 50000:50000 \
+  -v /var/jenkins_home:/var/jenkins_home \
+  -v /var/run/docker.sock:/var/run/docker.sock \
+  -v /usr/local/maven3:/usr/local/maven3 \    
+  -v /usr/java/jdk1.8.0_212:/usr/java/jdk1.8.0_212 \
+  jenkinsci/blueocean
+宿主机给足/var/jenkins_home路径权限：chmod 777 -R /var/jenkins_home
+查看日志：
+docker logs -f jenkins-blueocean 
+进入容器查看：
+docker exec -it jenkins-blueocean /bin/bash
+```
+
+三、docker按照的程序的备份
+
+```shell
+1、备份当前版本的镜像防止镜像版本变化造成的影响
+2、备份挂载之后的文件。这样在重新运行镜像还是以前配置好的配置。
 ```
 
