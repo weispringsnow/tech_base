@@ -148,3 +148,20 @@ delron/fastdfs
 mkdir -p /home/docker/fdfs/tracker
 mkdir -p /home/docker/fdfs/storage
 ```
+#### 10、错误处理
+
+```shell
+错误
+Error response from daemon: endpoint with name gitlab already exists in network bridge
+清理此容器的网络占用
+格式：docker network disconnect --force 网络模式 容器名称
+示例：docker network disconnect --force bridge gitlab
+如果清除网络占用后,启动报
+docker: Error response from daemon: Conflict. The container name "/gitlab" is already in use by container "98a83b26615c732c91a8ad6e4653122a9cc54a24de48f27081f803af2d75b84b". You have to remove (or rename) that container to be able to reuse that name.
+则先删除已停止的容器
+ docker rm $(docker ps -a -q)
+在清除一次网络占用
+```
+
+
+
