@@ -25,7 +25,7 @@ CREATE USER 'pig'@'%';
 先给root所有权限。
 grant all privileges on *.* to 'root'@'%';
 命令:
-GRANT privileges ON databasename.tablename TO 'username'@'host'
+GRANT all privileges ON databasename.tablename TO 'username'@'host'
 说明:
 privileges：用户的操作权限，如SELECT，INSERT，UPDATE等，如果要授予所的权限则使用ALL
 databasename：数据库名
