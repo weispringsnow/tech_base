@@ -163,5 +163,23 @@ docker: Error response from daemon: Conflict. The container name "/gitlab" is al
 在清除一次网络占用
 ```
 
+####11、HikariCP 连接池
 
+```
+HikariCP 连接池
+Spring Boot 如果发现 Tomcat 连接池不可用，则尝试选择 HikariCP 作为默认连接池。HikariCP 连接池常用的属性：
+属性	描述	默认值
+dataSourceClassName	JDBC 驱动程序提供的 DataSource 类的名称，如果使用了jdbcUrl则不需要此属性	-
+jdbcUrl	数据库连接地址	-
+username	数据库账户，如果使用了jdbcUrl则需要此属性	-
+password	数据库密码，如果使用了jdbcUrl则需要此属性	-
+autoCommit	是否自动提交事务	true
+connectionTimeout	连接超时时间（毫秒），如果在没有连接可用的情况下等待超过此时间，则抛出 SQLException	30000（30秒）
+idleTimeout	空闲超时时间（毫秒），只有在minimumIdle<maximumPoolSize时生效，超时的连接可能被回收，数值 0 表示空闲连接永不从池中删除	600000（10分钟）
+maxLifetime	连接池中的连接的最长生命周期（毫秒）。数值 0 表示不限制	1800000（30分钟）
+connectionTestQuery	连接池每分配一条连接前执行的查询语句（如：SELECT 1），以验证该连接是否是有效的。如果你的驱动程序支持 JDBC4，HikariCP 强烈建议我们不要设置此属性	-
+minimumIdle	最小空闲连接数，HikariCP 建议我们不要设置此值，而是充当固定大小的连接池	与maximumPoolSize数值相同
+maximumPoolSize	连接池中可同时连接的最大连接数，当池中没有空闲连接可用时，就会阻塞直到超出connectionTimeout设定的数值	10
+poolName	连接池名称，主要用于显示在日志记录和 JMX 管理控制台中	auto-generated
+```
 
