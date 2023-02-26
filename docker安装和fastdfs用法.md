@@ -1,6 +1,6 @@
 [TOC]
 
-####1、 安装 Docker
+#### 1、 安装 Docker
 
 ```mysql
 卸载:
@@ -10,13 +10,16 @@ yum list installed | grep docker
 yum -y remove docker-engine.x86_64 
 3.删除镜像/容器等
 rm -rf /var/lib/docker
-CentOS7 系统 CentOS-Extras 库中已带 Docker，可以直接安装：
-$ sudo yum install docker			##不是最新版本
 #最新版安装
 $ sudo yum install -y yum-utils device-mapper-persistent-data lvm2
-$ sudo yum-config-manager --add-repo https://mirrors.aliyun.com/docker-ce/linux/centos/docker-ce.repo 
+//官方源地址（比较慢）
+$ sudo yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
+//阿里云
+$ sudo yum-config-manager --add-repo http://mirrors.aliyun.com/docker-ce/linux/centos/docker-ce.repo
+//清华大学源 
+$ sudo yum-config-manager --add-repo https://mirrors.tuna.tsinghua.edu.cn/docker-ce/linux/centos/docker-ce.repo
+//yum指令安装docker-ce
 sudo yum -y install docker-ce 
-
 ```
 
 #### 2、查看docker版本、启动docker、设置随系统启动
@@ -32,6 +35,8 @@ sudo chkconfig docker on
 
 systemctl daemon-reload
 systemctl start docker
+
+systemctl enable docker
 
 ####3、Docker基本操作
 
@@ -132,21 +137,46 @@ docker run -d --network=host \
 --name tracker \
 --restart=always \
 -v /home/docker/fdfs/tracker:/var/fdfs \
-delron/fastdfs
+-v /etc/localtime:/etc/localtime \
+delron/fastdfs tracker
 -- 存储
 docker stop storage
 docker rm storage
 docker run -d --network=host \
 --restart=always \
 --name storage \
--e TRACKER_SERVER=172.16.2.246:22122 \
+-e TRACKER_SERVER=172.25.45.190:22122 \
 -e GROUP_NAME=group1 \
--e PORT=23000 \
 -v /home/docker/fdfs/storage:/var/fdfs \
-delron/fastdfs
+-v /etc/localtime:/etc/localtime \
+delron/fastdfs storage
 创建一些目录：
 mkdir -p /home/docker/fdfs/tracker
 mkdir -p /home/docker/fdfs/storage
+配置fastdfs
+进入storage容器，到storage的配置文件中配置http访问的端口，配置文件在/etc/fdfs目录下的storage.conf。
+docker exec -it storage /bin/bash
+cd /etc/fdfs
+fdfs_monitor storage.conf
+//查看端口占用情况
+netstat -aon | grep 22122
+
+
+
+2、测试是否搭建成功
+netstat -tulnp
+docker exec -it storage /bin/bash
+
+echo "Hello FastDFS">index.html
+fdfs_test /etc/fdfs/client.conf upload index.html
+
+
+在nginx上的配置
+docker exec -it storage /bin/bash
+cd /usr/local/nginx/conf
+/usr/local/nginx/sbin/nginx -s reload
+
+
 ```
 #### 10、错误处理
 
@@ -163,7 +193,7 @@ docker: Error response from daemon: Conflict. The container name "/gitlab" is al
 在清除一次网络占用
 ```
 
-####11、HikariCP 连接池
+#### 11、HikariCP 连接池
 
 ```
 HikariCP 连接池
@@ -181,5 +211,11 @@ connectionTestQuery	连接池每分配一条连接前执行的查询语句（如
 minimumIdle	最小空闲连接数，HikariCP 建议我们不要设置此值，而是充当固定大小的连接池	与maximumPoolSize数值相同
 maximumPoolSize	连接池中可同时连接的最大连接数，当池中没有空闲连接可用时，就会阻塞直到超出connectionTimeout设定的数值	10
 poolName	连接池名称，主要用于显示在日志记录和 JMX 管理控制台中	auto-generated
+```
+
+```shell
+
+
+
 ```
 

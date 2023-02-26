@@ -215,7 +215,7 @@ docker stop mysql
 docker rm mysql
 docker run -d --name mysql \
 --restart=always \
--p 33060:3306  \
+-p 3306:3306  \
 -v /home/docker/mysql/data:/var/lib/mysql  \
 -v /home/docker/mysql/logs:/var/log/mysql \
 -v /etc/localtime:/etc/localtime \
@@ -226,7 +226,7 @@ docker stop mysql
 docker rm mysql
 docker run -d --name mysql \
 --restart=always \
--p 33060:3306  \
+-p 3306:3306  \
 -v /home/mysql/docker/data:/var/lib/mysql  \
 -v /home/mysql/docker/logs:/var/log/mysql \
 -v /etc/localtime:/etc/localtime \
@@ -241,6 +241,17 @@ docker logs -f mysql
 docker exec -it mysql bash
 docker cp mysql:/var/lib/mysql/ /home/docker/mysql/data
 docker cp mysql:/var/log/mysql/ /home/docker/mysql/logs
+sudo vim /etc/mysql/conf.d/mysql.cnf
+
+文件底部追加:
+
+[mysqld]
+sql_mode=STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION
+
+
+ALTER USER root@localhost IDENTIFIED WITH mysql_native_password BY '8ach4b6f9c';
+flush privileges; 
+// 刷新设置立即生效
 ```
 #### 2、mysql-binlog日志删除
 
